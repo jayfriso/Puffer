@@ -58,3 +58,7 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+# Polygon Assets
+/[Aa]ssets/PolygonAdventure*
+/[Aa]ssets/PolygonPrototype*
+/[Aa]ssets/PolygonSamurai*
