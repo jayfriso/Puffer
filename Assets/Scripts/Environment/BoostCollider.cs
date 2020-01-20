@@ -30,6 +30,7 @@ namespace JFrisoGames.PuffMan
             if (!other.CompareTag(PuffConstants.TAG_BALL)) return;
 
             BallTouchController ball = PuffSingletonManager.gameManager.ballController;
+            ball.rigidBody.velocity = new Vector3(ball.rigidBody.velocity.x, 0, ball.rigidBody.velocity.z);
             ball.rigidBody.AddForce(_boostForce, ForceMode.Impulse);
             ball.maxVelocityBoosts.Add(_maxVelocityBoost.Copy());
         }

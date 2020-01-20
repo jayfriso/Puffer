@@ -56,7 +56,6 @@ namespace JFrisoGames.PuffMan
         {
             float distanceTraveled = (newPosition - _startPosition).z;
             float percentageTraveled = distanceTraveled / _totalLevelDistance;
-            Debug.Log("Percentage Traveled : " + percentageTraveled);
             SetBallPositionHud(percentageTraveled);
         }
 

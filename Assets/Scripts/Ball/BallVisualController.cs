@@ -13,6 +13,7 @@ namespace JFrisoGames.PuffMan
     public class BallVisualController : MonoBehaviour
     {
         /******* Variables & Properties*******/
+        [SerializeField] private ParticleSystem _particleSystem;
         [SerializeField] private Material _ballExpandedMaterial;
         [SerializeField] private Material _ballCompressedMaterial;
         [SerializeField] private int _materialToSet;
@@ -28,14 +29,17 @@ namespace JFrisoGames.PuffMan
             set
             {
                 _ballVisualState = value;
+                var emissionModule = _particleSystem.emission;
                 switch (value)
                 {
                     case BallVisualState.Expanded:
                         _ballMaterials[2] = _ballExpandedMaterial;
+                        emissionModule.enabled = false;
                         break;
                     case BallVisualState.Compressed:
                         _ballMaterials[2] = _ballCompressedMaterial;
                         _meshRenderer.materials[_materialToSet] = _ballCompressedMaterial;
+                        emissionModule.enabled = true;
                         break;
                 }
                 _meshRenderer.materials = _ballMaterials;

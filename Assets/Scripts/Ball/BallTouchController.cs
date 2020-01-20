@@ -4,6 +4,7 @@ using UnityEngine;
 using DigitalRubyShared;
 using UnityEngine.Serialization;
 using System;
+using DG.Tweening;
 
 namespace JFrisoGames.PuffMan
 {
@@ -35,6 +36,8 @@ namespace JFrisoGames.PuffMan
         [Header("Components")]
         [SerializeField] private BallVisualController _visualController;
 
+        // Movement Variables
+
         [Header("Movement Physics")]
         [SerializeField] private float _baseMaxVelocity;
         [SerializeField] private float _swipeMagnitude;
@@ -42,34 +45,13 @@ namespace JFrisoGames.PuffMan
         [SerializeField] private float _boostFadeOutTime;
         [SerializeField] private AnimationCurve _forceApplicationCurve;
         [SerializeField] private List<MaxVelocityBoost> _bounceMaxVelocityBoosts;
+        [SerializeField] private float _maxVelocityLerpTime;
 
-        [Header("Rotation Physics")]
-        [SerializeField] private float _maxAngularVelocity;
-        [SerializeField] private float _rotationTorqueForce;
-
-        [Header("Compression")]
-        [SerializeField] private Vector3 _fullyCompressedScale;
-        [SerializeField] private float _compressionTime;
-        [SerializeField] float _releaseTime;
-        [SerializeField] float _minCompressionAmount;
-        [SerializeField] [FormerlySerializedAs("_releaseForces")] List<Vector3> _bounceForces;
-        [SerializeField] private float _floorDetectionRayDistance;
-        [SerializeField] private float _floorTimeToResetReleaseLevel;
-
-        [Header("Control Settings")]
-        [SerializeField] private float _holdGestureActivationTime;
-
-        [Header("EventSettings")]
-        [SerializeField] private Vector3 _ballPositionChangeMinDelta;
-
-        // Input Control Variables
-        private SwipeGestureRecognizer _swipeGesture;
-        private LongPressGestureRecognizer _longPressGesture;
-
-        // Movement Variables
         public Rigidbody rigidBody { private set; get; }
         private float _currentInputForceTime;
         private Vector3 _currentInputForce;
+        private float _currentMaxVelocity;
+        private Tween _maxVelocityLerpTween;
 
         public List<MaxVelocityBoost> maxVelocityBoosts { get; private set; }
 
@@ -77,7 +59,7 @@ namespace JFrisoGames.PuffMan
         {
             get
             {
-                float result = _baseMaxVelocity;
+                float result = _isInFlight ? _flightMaxSpeed : _currentMaxVelocity;
                 for (int i = 0; i < maxVelocityBoosts.Count; i++)
                 {
                     MaxVelocityBoost boost = maxVelocityBoosts[i];
@@ -90,18 +72,33 @@ namespace JFrisoGames.PuffMan
             }
         }
 
-        // Event Variables
-        private float _sqrMaxVelocity { get { return _maxVelocity * _maxVelocity; } }
-        private int _lastVelocityAsInt = 0;
-        private Vector3 _lastPosition;
+        // Rotation Variables
+
+        [Header("Rotation Physics")]
+        [SerializeField] private float _maxAngularVelocity;
+        [SerializeField] private float _rotationTorqueForce;
 
         // Compression Release Variables
+
+        [Header("Compression")]
+        [SerializeField] private Vector3 _fullyCompressedScale;
+        [SerializeField] private float _compressionTime;
+        [SerializeField] float _releaseTime;
+        [SerializeField] float _minCompressionAmount;
+        [SerializeField] [FormerlySerializedAs("_releaseForces")] List<Vector3> _bounceForces;
+        [SerializeField] private float _floorDetectionRayDistance;
+        [SerializeField] private float _floorTimeToResetReleaseLevel;
+        [SerializeField] private Vector3 _jumpForce;
+
         private Vector3 _startScale;
         private float _currentTime;
         private bool _isCompressing;
         private bool _isReleasing;
         private float _currentFloorTime;
         private int _currentBounceLevel = 0;
+
+        private Tween _jumpTween;
+        private float _currentTweenCompressionAmount = 0f;
 
         private float _currentCompressionAmount
         {
@@ -112,7 +109,7 @@ namespace JFrisoGames.PuffMan
                 else if (_isReleasing)
                     return 1f - (_currentTime / _releaseTime);
                 else
-                    return 0f;
+                    return _currentTweenCompressionAmount;
             }
         }
 
@@ -129,6 +126,34 @@ namespace JFrisoGames.PuffMan
             }
         }
 
+        // Event Variables
+
+        [Header("EventSettings")]
+        [SerializeField] private Vector3 _ballPositionChangeMinDelta;
+        private float _sqrMaxVelocity { get { return _maxVelocity * _maxVelocity; } }
+        private int _lastVelocityAsInt = 0;
+        private Vector3 _lastPosition;
+
+        // Input Control Variables
+
+        [Header("Control Settings")]
+        [SerializeField] private float _holdGestureActivationTime;
+
+        private SwipeGestureRecognizer _swipeGesture;
+        private LongPressGestureRecognizer _longPressGesture;
+        private TapGestureRecognizer _tapGesture;
+
+        // Flight variables
+
+        [Header("Flight Variables")]
+        [SerializeField] private float _flightMaxSpeed;
+        [SerializeField] private Vector3 _flightForwardForce;
+        [SerializeField] private float _flightHoldSpeed;
+
+        private bool _isInFlight = false;
+        private float _lastHoldXPosition = 0f;
+        
+
         /******* Monobehavior Methods *******/
 
         private void FixedUpdate()
@@ -140,9 +165,24 @@ namespace JFrisoGames.PuffMan
             {
                 _currentInputForceTime -= Time.fixedDeltaTime;
                 rigidBody.AddForce(_currentInputForce * _forceApplicationCurve.Evaluate(1 - (_currentInputForceTime / _swipeForceApplicationTime)), ForceMode.Force);
-                
+
             }
-            
+
+            // Check whether colided with ground
+            if (_isInFlight && _isCollidingWithFloor)
+                EndFlight();
+
+            if (_isInFlight && _visualController.ballVisualState == BallVisualState.Expanded)
+                _visualController.ballVisualState = BallVisualState.Compressed;
+            else if (!_isInFlight && _visualController.ballVisualState == BallVisualState.Compressed)
+                _visualController.ballVisualState = BallVisualState.Expanded;
+
+            // Apply flight force if in flight
+            if (_isInFlight)
+            {
+                rigidBody.AddForce(_flightForwardForce, ForceMode.Force);
+            }
+
             // Apply the max velocity
             Vector3 currentXZVelocity = new Vector3(rigidBody.velocity.x, 0, rigidBody.velocity.z);
             if (currentXZVelocity.sqrMagnitude > _sqrMaxVelocity)
@@ -221,48 +261,98 @@ namespace JFrisoGames.PuffMan
 
         private void HandleHold(GestureRecognizer gesture)
         {
-            if (_isCompressing)
+
+            #region OLD HOLD TO JUMP CODE
+            //if (_isCompressing)
+            //{
+            //    switch(gesture.State)
+            //    {
+            //        // If still holding then progress the time 
+            //        case GestureRecognizerState.Executing:
+            //        {
+            //            if (_currentTime < _compressionTime)
+            //                _currentTime += Time.fixedDeltaTime;
+            //            break;
+            //        }
+            //        // If ended execute the release force and set up for release
+            //        case GestureRecognizerState.Ended:
+            //        {
+            //            if (_isCollidingWithFloor && _currentCompressionAmount > _minCompressionAmount)
+            //            {
+            //                rigidBody.velocity = new Vector3(rigidBody.velocity.x, 0f, rigidBody.velocity.z);
+            //                Vector3 releaseForce = _bounceForces[_currentBounceLevel];
+            //                rigidBody.AddForce(releaseForce * _currentCompressionAmount, ForceMode.Impulse);
+            //                Debug.Log("Current Release Level " + _currentBounceLevel);
+            //                MaxVelocityBoost bounceMaxVelocityBoost = _bounceMaxVelocityBoosts[_currentBounceLevel].Copy();
+            //                maxVelocityBoosts.Add(bounceMaxVelocityBoost);
+
+            //                if (_currentBounceLevel < _bounceForces.Count - 1)
+            //                    _currentBounceLevel++;
+            //                _currentFloorTime = 0f;
+            //            }
+
+            //            _visualController.ballVisualState = BallVisualState.Expanded;
+            //            _isReleasing = true;
+            //            _isCompressing = false;
+            //            _currentTime = 0f;
+            //            break;
+            //        }
+            //    }
+            //}
+            //// State the gesture if a hold was started 
+            //else if (gesture.State == GestureRecognizerState.Began)
+            //{
+            //    _currentTime = 0f;
+            //    _isReleasing = false;
+            //    _isCompressing = true;
+            //}
+            #endregion
+
+
+            switch(gesture.State)
             {
-                switch(gesture.State)
+                case GestureRecognizerState.Began :
                 {
-                    // If still holding then progress the time 
-                    case GestureRecognizerState.Executing:
-                    {
-                        if (_currentTime < _compressionTime)
-                            _currentTime += Time.fixedDeltaTime;
-                        break;
-                    }
-                    // If ended execute the release force and set up for release
-                    case GestureRecognizerState.Ended:
-                    {
-                        if (_isCollidingWithFloor && _currentCompressionAmount > _minCompressionAmount)
-                        {
-                            rigidBody.velocity = new Vector3(rigidBody.velocity.x, 0f, rigidBody.velocity.z);
-                            Vector3 releaseForce = _bounceForces[_currentBounceLevel];
-                            rigidBody.AddForce(releaseForce * _currentCompressionAmount, ForceMode.Impulse);
-                            Debug.Log("Current Release Level " + _currentBounceLevel);
-                            MaxVelocityBoost bounceMaxVelocityBoost = _bounceMaxVelocityBoosts[_currentBounceLevel].Copy();
-                            maxVelocityBoosts.Add(bounceMaxVelocityBoost);
+                    if (_isCollidingWithFloor)
+                        return;
 
-                            if (_currentBounceLevel < _bounceForces.Count - 1)
-                                _currentBounceLevel++;
-                            _currentFloorTime = 0f;
-                        }
+                    _lastHoldXPosition = gesture.FocusX;
 
-                        _visualController.ballVisualState = BallVisualState.Expanded;
-                        _isReleasing = true;
-                        _isCompressing = false;
-                        _currentTime = 0f;
-                        break;
-                    }
+                     _isInFlight = true;
+
+                    if (_maxVelocityLerpTween != null && _maxVelocityLerpTween.IsActive())
+                        _maxVelocityLerpTween.Kill();
+                    break;
+                }
+                case GestureRecognizerState.Executing:
+                {
+                    if (!_isInFlight)
+                        return;
+
+                    float horizontalMoveAmount = gesture.DeltaX * _flightHoldSpeed;
+                    rigidBody.AddForce(new Vector3(horizontalMoveAmount, 0, 0), ForceMode.Force);
+                    _lastHoldXPosition = gesture.FocusX;
+                    break;
+                }
+                case GestureRecognizerState.Ended:
+                {
+                    EndFlight();
+                    break;
                 }
             }
-            // State the gesture if a hold was started 
-            else if (gesture.State == GestureRecognizerState.Began)
+        }
+
+        private void HandleTap(GestureRecognizer gesture)
+        {
+            if (gesture.State == GestureRecognizerState.Ended && _isCollidingWithFloor)
             {
-                _currentTime = 0f;
-                _isReleasing = false;
-                _isCompressing = true;
+                if (_jumpTween != null && _jumpTween.IsActive())
+                    _jumpTween.Kill();
+
+                _jumpTween = DOTween.To(() => _currentTweenCompressionAmount, (value) => _currentTweenCompressionAmount = value, 1f, 0.35f).From(true);
+
+                rigidBody.velocity = new Vector3(rigidBody.velocity.x, 0, rigidBody.velocity.z);
+                rigidBody.AddForce(_jumpForce, ForceMode.Impulse);
             }
         }
 
@@ -274,8 +364,12 @@ namespace JFrisoGames.PuffMan
                 if (contact.otherCollider.CompareTag(PuffConstants.TAG_FLOOR))
                 {
                     _currentFloorTime += Time.deltaTime;
+                    
                     if (_currentFloorTime > _floorTimeToResetReleaseLevel)
+                    {
                         _currentBounceLevel = 0;
+                        return;
+                    }
                 }
             }
         }
@@ -300,9 +394,16 @@ namespace JFrisoGames.PuffMan
             _longPressGesture.StateUpdated += HandleHold;
             FingersScript.Instance.AddGesture(_longPressGesture);
 
+            _tapGesture = new TapGestureRecognizer();
+            _tapGesture.ThresholdUnits = 0.3f;
+            _tapGesture.StateUpdated += HandleTap;
+            FingersScript.Instance.AddGesture(_tapGesture);
+
             maxVelocityBoosts = new List<MaxVelocityBoost>();
 
             _lastPosition = transform.position;
+
+            _currentMaxVelocity = _baseMaxVelocity;
         }
 
         public void Reset(Vector3 startPosition)
@@ -314,6 +415,13 @@ namespace JFrisoGames.PuffMan
             _currentTime = 0f;
             _currentFloorTime = 0f;
             transform.position = startPosition;
+        }
+
+        private void EndFlight()
+        {
+            _isInFlight = false;
+            _currentMaxVelocity = rigidBody.velocity.z;
+            _maxVelocityLerpTween = DOTween.To(() => _currentMaxVelocity, (value) => _currentMaxVelocity = value, _baseMaxVelocity, _maxVelocityLerpTime);
         }
     }
 }
