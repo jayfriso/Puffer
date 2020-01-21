@@ -435,6 +435,7 @@ GameObject:
   m_Component:
   - component: {fileID: 535197660}
   - component: {fileID: 535197661}
+  - component: {fileID: 535197662}
   m_Layer: 0
   m_Name: Collider
   m_TagString: Ball
@@ -469,6 +470,18 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.4271151
   m_Center: {x: -0.07288488, y: 0, z: 0}
+--- !u!114 &535197662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535197659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69cea3b3876b04d419789afcbaf8c11b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &571861586
 GameObject:
   m_ObjectHideFlags: 0
@@ -5320,6 +5333,50 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!1 &969709853
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 969709854}
+  - component: {fileID: 969709855}
+  m_Layer: 0
+  m_Name: Collider
+  m_TagString: Ball
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &969709854
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 969709853}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.02, z: 0.007}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1743672702}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &969709855
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 969709853}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.4271151
+  m_Center: {x: -0.07288488, y: 0, z: 0}
 --- !u!1 &1021273999
 GameObject:
   m_ObjectHideFlags: 0
@@ -5390,7 +5447,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _levelSpawnSystem: {fileID: 1778348688}
-  _ballController: {fileID: 3334058042449326810}
+  _ballController: {fileID: 3334058042449326812}
   _levelStartPosition: {x: 0, y: -16, z: 10}
   _ballSpawnDiffFromGround: {x: 0, y: 5, z: 5}
 --- !u!114 &1021274003
@@ -5407,6 +5464,228 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gameManager: {fileID: 1021274002}
   _uiManager: {fileID: 504155788}
+--- !u!1 &1052277517
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1052277521}
+  - component: {fileID: 1052277520}
+  - component: {fileID: 1052277519}
+  - component: {fileID: 1052277518}
+  m_Layer: 0
+  m_Name: Mesh
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1052277518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052277517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 879bd19409af0d34797e37db2c102291, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _particleSystem: {fileID: 855801172}
+  _ballExpandedMaterial: {fileID: 2100000, guid: b495de7a2e86e8a4eb7fa810f6138088,
+    type: 2}
+  _ballCompressedMaterial: {fileID: 2100000, guid: f08c170f546f7e443b6e14cc96f07ab6,
+    type: 2}
+  _materialToSet: 2
+--- !u!33 &1052277519
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052277517}
+  m_Mesh: {fileID: -3110858227583222831, guid: 03b9bdf35a491b348ac7ff3da534aff9, type: 3}
+--- !u!23 &1052277520
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052277517}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: e50ff14ac10488041adbd4fe2d39b913, type: 2}
+  - {fileID: 2100000, guid: 9da874f47b595b64aa41af997f2ee5a3, type: 2}
+  - {fileID: 2100000, guid: f08c170f546f7e443b6e14cc96f07ab6, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!4 &1052277521
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052277517}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1743672702}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1743672699
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1743672702}
+  - component: {fileID: 1743672701}
+  - component: {fileID: 1743672700}
+  m_Layer: 0
+  m_Name: Player Ball (1)
+  m_TagString: Ball
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!54 &1743672700
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1743672699}
+  serializedVersion: 2
+  m_Mass: 50
+  m_Drag: 0.035
+  m_AngularDrag: 2
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &1743672701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1743672699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e689f6b063922141ba44f32d7d58bfb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _visualController: {fileID: 1052277518}
+  _baseMaxVelocity: 31
+  _swipeMagnitude: 5000
+  _swipeForceApplicationTime: 0.75
+  _boostFadeOutTime: 1
+  _forceApplicationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.004166667
+      value: 0.9952941
+      inSlope: -3.285561
+      outSlope: -3.285561
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.04621849
+    - serializedVersion: 3
+      time: 0.99583334
+      value: -0.002352941
+      inSlope: -0
+      outSlope: -0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.13389121
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _bounceMaxVelocityBoosts:
+  - amount: 5
+    time: 2
+  - amount: 8
+    time: 2
+  - amount: 12
+    time: 2
+  - amount: 15
+    time: 2
+  - amount: 17
+    time: 2
+  _maxVelocityLerpTime: 2.5
+  _maxAngularVelocity: 30
+  _rotationTorqueForce: 50
+  _fullyCompressedScale: {x: 0.4, y: 0.4, z: 0.4}
+  _compressionTime: 0.5
+  _releaseTime: 0.05
+  _minCompressionAmount: 0.5
+  _bounceForces:
+  - {x: 0, y: 550, z: 150}
+  - {x: 0, y: 600, z: 200}
+  - {x: 0, y: 650, z: 250}
+  - {x: 0, y: 700, z: 275}
+  - {x: 0, y: 800, z: 300}
+  _floorDetectionRayDistance: 1.5
+  _floorTimeToResetReleaseLevel: 0.3
+  _jumpForce: {x: 0, y: 900, z: 0}
+  _ballPositionChangeMinDelta: {x: 0, y: 0, z: 5}
+  _holdGestureActivationTime: 0.3
+  _flightMaxSpeed: 100
+  _flightForwardForce: {x: 0, y: 0, z: 1200}
+  _flightHoldSpeed: 400
+--- !u!4 &1743672702
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1743672699}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
+  m_LocalPosition: {x: 0, y: -11.425374, z: 14}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_Children:
+  - {fileID: 969709854}
+  - {fileID: 1052277521}
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1766877019
 GameObject:
   m_ObjectHideFlags: 0
@@ -5529,8 +5808,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3602414508502044328}
-  - component: {fileID: 3334058042449326810}
+  - component: {fileID: 3334058042449326812}
   - component: {fileID: 3334058042449326809}
+  - component: {fileID: 3334058042449326811}
+  - component: {fileID: 3334058042449326810}
+  - component: {fileID: 3334058042449326808}
+  - component: {fileID: 3334058042449326814}
+  - component: {fileID: 3334058042449326813}
   m_Layer: 0
   m_Name: Player Ball
   m_TagString: Ball
@@ -5538,6 +5822,23 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &3334058042449326808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3334058042449326807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 158e61eebe2f3684f98b08b89870551d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _flightForwardForce: {x: 0, y: 0, z: 1200}
+  _flightHoldSpeed: 400
+  _flightMaxVelocity: 100
+  _maxVelocityLerpTime: 2
+  _holdGestureActivationTime: 0.25
 --- !u!54 &3334058042449326809
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5563,70 +5864,94 @@ MonoBehaviour:
   m_GameObject: {fileID: 3334058042449326807}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e689f6b063922141ba44f32d7d58bfb, type: 3}
+  m_Script: {fileID: 11500000, guid: 9e4f2549daac20646a17da0047a44072, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _visualController: {fileID: 58627694}
-  _baseMaxVelocity: 31
+  _fullyCompressedScale: {x: 0.4, y: 0.4, z: 0.4}
+  _compressionTime: 0.5
+  _jumpForce: {x: 0, y: 900, z: 0}
+  _maxTapDistance: 0.3
+--- !u!114 &3334058042449326811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3334058042449326807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5542a79134b814e4e952d0366f92071b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   _swipeMagnitude: 5000
   _swipeForceApplicationTime: 0.75
-  _boostFadeOutTime: 1
   _forceApplicationCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.004166667
-      value: 0.9952941
-      inSlope: -3.285561
-      outSlope: -3.285561
+      time: -0.004166667
+      value: 1.002353
+      inSlope: -2.117647
+      outSlope: -2.117647
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.04621849
+      outWeight: 0.101265825
     - serializedVersion: 3
-      time: 0.99583334
-      value: -0.002352941
-      inSlope: -0
-      outSlope: -0
+      time: 0.98333335
+      value: 0.004705882
+      inSlope: 0.1697941
+      outSlope: 0.1697941
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.13389121
+      inWeight: 0.35000005
       outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _bounceMaxVelocityBoosts:
-  - amount: 5
-    time: 2
-  - amount: 8
-    time: 2
-  - amount: 12
-    time: 2
-  - amount: 15
-    time: 2
-  - amount: 17
-    time: 2
-  _maxVelocityLerpTime: 2.5
+  _oppositeXInputVelocityPercentage: 0.5
   _maxAngularVelocity: 30
   _rotationTorqueForce: 50
-  _fullyCompressedScale: {x: 0.4, y: 0.4, z: 0.4}
-  _compressionTime: 0.5
-  _releaseTime: 0.05
-  _minCompressionAmount: 0.5
-  _bounceForces:
-  - {x: 0, y: 550, z: 150}
-  - {x: 0, y: 600, z: 200}
-  - {x: 0, y: 650, z: 250}
-  - {x: 0, y: 700, z: 275}
-  - {x: 0, y: 800, z: 300}
+--- !u!114 &3334058042449326812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3334058042449326807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0235088ee37ab54a948a9444b05cdea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3334058042449326813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3334058042449326807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d41ca02e1a34b143815d7d84c4879f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   _floorDetectionRayDistance: 1.5
-  _floorTimeToResetReleaseLevel: 0.3
-  _jumpForce: {x: 0, y: 900, z: 0}
   _ballPositionChangeMinDelta: {x: 0, y: 0, z: 5}
-  _holdGestureActivationTime: 0.3
-  _flightMaxSpeed: 100
-  _flightForwardForce: {x: 0, y: 0, z: 1200}
-  _flightHoldSpeed: 400
+--- !u!114 &3334058042449326814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3334058042449326807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afc549a8623f8ba4a9daa4081d7c849e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _baseMaxVelocity: 30
+  _boostFadeOutTime: 1
 --- !u!4 &3602414508502044328
 Transform:
   m_ObjectHideFlags: 0

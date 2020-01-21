@@ -6,11 +6,11 @@ namespace JFrisoGames.PuffMan
 {
     public enum BallVisualState
     {
-        Expanded = 0,
-        Compressed = 1
+        Regular = 0,
+        Flying = 1
     }
 
-    public class BallVisualController : MonoBehaviour
+    public class BallVisualController : AbstractBallController
     {
         /******* Variables & Properties*******/
         [SerializeField] private ParticleSystem _particleSystem;
@@ -32,11 +32,11 @@ namespace JFrisoGames.PuffMan
                 var emissionModule = _particleSystem.emission;
                 switch (value)
                 {
-                    case BallVisualState.Expanded:
+                    case BallVisualState.Regular:
                         _ballMaterials[2] = _ballExpandedMaterial;
                         emissionModule.enabled = false;
                         break;
-                    case BallVisualState.Compressed:
+                    case BallVisualState.Flying:
                         _ballMaterials[2] = _ballCompressedMaterial;
                         _meshRenderer.materials[_materialToSet] = _ballCompressedMaterial;
                         emissionModule.enabled = true;
@@ -50,11 +50,13 @@ namespace JFrisoGames.PuffMan
 
         /******* Methods *******/
 
-        public void Init()
+        public override void Init(Ball ball)
         {
+            base.Init(ball);
+
             _meshRenderer = GetComponent<MeshRenderer>();
             _ballMaterials = _meshRenderer.materials;
-            ballVisualState = BallVisualState.Expanded;
+            ballVisualState = BallVisualState.Regular;
         }
     }
 }
