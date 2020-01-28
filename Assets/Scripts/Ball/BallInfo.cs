@@ -38,6 +38,7 @@ namespace JFrisoGames.PuffMan
 
         /******* Methods *******/
 
+
         public override void ExecuteFixedUpdate()
         {
             base.ExecuteFixedUpdate();
