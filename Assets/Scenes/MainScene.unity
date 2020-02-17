@@ -5517,8 +5517,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _partParent: {fileID: 1778348689}
   _levelPartPrefabs:
-  - {fileID: 3264915382751239995, guid: b2f9f9ee745cbc74db634d1f88f7b4b5, type: 3}
-  _numberOfPartsToSpawn: 10
+  - {fileID: 3264915382751239995, guid: 20b5978ee4996eb46a38dcdcc5842eb6, type: 3}
+  _numberOfPartsToSpawn: 20
 --- !u!4 &1778348689
 Transform:
   m_ObjectHideFlags: 0
@@ -5569,7 +5569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 158e61eebe2f3684f98b08b89870551d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _flightForwardForce: {x: 0, y: 0, z: 1200}
+  _flightForwardForce: {x: 0, y: -500, z: 1350}
   _flightHoldSpeed: 400
   _flightMaxVelocity: 100
   _maxVelocityLerpTime: 2
@@ -5583,7 +5583,7 @@ Rigidbody:
   m_GameObject: {fileID: 3334058042449326807}
   serializedVersion: 2
   m_Mass: 50
-  m_Drag: 0.035
+  m_Drag: 0.025
   m_AngularDrag: 2
   m_UseGravity: 1
   m_IsKinematic: 0
