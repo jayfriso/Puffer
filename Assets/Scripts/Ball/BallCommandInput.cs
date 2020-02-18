@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace JFrisoGames.PuffMan
 {
+    /// <summary>
+    /// TODO : THIS CLASS IS NOT WORKING ANYMORE AND IS DEPRECATED
+    /// </summary>
+    #region DEPRECATED
     public enum BallCommand
     {
         // Movement Commands
@@ -17,11 +21,11 @@ namespace JFrisoGames.PuffMan
         BackLeft
     }
 
-    public class BallCommandInput : MonoBehaviour, IRollInput
+    public class BallCommandInput : MonoBehaviour, IMovementInput
     {
         /******* Events *******/
 
-        public event OnRollInput onRollInput;
+        public event OnMovementInput onMovementInput;
 
         /******* Variables & Properties*******/
 
@@ -31,7 +35,7 @@ namespace JFrisoGames.PuffMan
 
         public void TriggerCommand(BallCommand command)
         {
-            switch(command)
+            switch (command)
             {
                 case BallCommand.Forward:
                 case BallCommand.ForwardLeft:
@@ -76,8 +80,10 @@ namespace JFrisoGames.PuffMan
                     direction = new Vector3(1, 0, 0);
                     break;
             }
-            onRollInput?.Invoke(direction);
+            onMovementInput?.Invoke(direction.x);
         }
-        public void InitRollInput() { }
+        public void InitMovementInput() { }
     }
+    #endregion
+
 }

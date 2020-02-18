@@ -5370,7 +5370,7 @@ MonoBehaviour:
   SimulateMouseWithTouches: 0
   ProcessUnityTouches: 1
   RequireControlKeyForMouseZoom: 1
-  MouseDistanceInUnitsForScaleAndRotate: 2
+  MouseDistanceInUnitsForScaleAndRotate: 4
   MouseWheelDeltaMultiplier: 0.025
   PassThroughObjects: []
   AutoAddRequiredComponents: 1
@@ -5569,11 +5569,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 158e61eebe2f3684f98b08b89870551d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _flightForwardForce: {x: 0, y: -500, z: 1350}
-  _flightHoldSpeed: 400
-  _flightMaxVelocity: 100
-  _maxVelocityLerpTime: 2
-  _holdGestureActivationTime: 0.25
+  _flightConstantForce: {x: 0, y: 2500, z: 0}
+  _flightActivationImpulseForce: {x: 0, y: 800, z: 0}
+  _flightMaxVelocity: 35
+  _flightMaxYVelocity: -7
+  _maxVelocityLerpTime: 0
 --- !u!54 &3334058042449326809
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5582,7 +5582,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3334058042449326807}
   serializedVersion: 2
-  m_Mass: 50
+  m_Mass: 75
   m_Drag: 0.025
   m_AngularDrag: 2
   m_UseGravity: 1
@@ -5604,8 +5604,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _fullyCompressedScale: {x: 0.4, y: 0.4, z: 0.4}
   _compressionTime: 0.5
-  _jumpForce: {x: 0, y: 900, z: 0}
-  _maxTapDistance: 0.3
+  _jumpForce: {x: 0, y: 1800, z: 0}
 --- !u!114 &3334058042449326811
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5618,35 +5617,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5542a79134b814e4e952d0366f92071b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _swipeMagnitude: 5000
-  _swipeForceApplicationTime: 0.75
-  _forceApplicationCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: -0.004166667
-      value: 1.002353
-      inSlope: -2.117647
-      outSlope: -2.117647
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.101265825
-    - serializedVersion: 3
-      time: 0.98333335
-      value: 0.004705882
-      inSlope: 0.1697941
-      outSlope: 0.1697941
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.35000005
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _oppositeXInputVelocityPercentage: 0.5
-  _maxAngularVelocity: 30
-  _rotationTorqueForce: 50
+  _movementSpeed: {x: 600, y: 0, z: 0}
+  _constantForwardForce: {x: 0, y: 0, z: 2000}
 --- !u!114 &3334058042449326812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5671,7 +5643,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d41ca02e1a34b143815d7d84c4879f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _floorDetectionRayDistance: 1.5
+  _floorDetectionRayDistance: 1
   _ballPositionChangeMinDelta: {x: 0, y: 0, z: 5}
 --- !u!114 &3334058042449326814
 MonoBehaviour:
@@ -5685,7 +5657,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afc549a8623f8ba4a9daa4081d7c849e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseMaxVelocity: 30
+  _baseMaxVelocity: 35
   _boostFadeOutTime: 1
 --- !u!114 &3334058042449326815
 MonoBehaviour:
@@ -5699,7 +5671,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8869d8c9096cf6949bab0ec10cba06e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _minSwipeDistance: 0.1
+  _holdTimeForGlideActivation: 0.2
 --- !u!4 &3602414508502044328
 Transform:
   m_ObjectHideFlags: 0

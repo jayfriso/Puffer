@@ -9,17 +9,18 @@ namespace JFrisoGames.PuffMan
     {
         /******* Variables & Properties*******/
         [Header("Flight Movement")]
-        [SerializeField] private Vector3 _flightForwardForce;
-        [SerializeField] private float _flightHoldSpeed;
+        [SerializeField] private Vector3 _flightConstantForce;
+        [SerializeField] private Vector3 _flightActivationImpulseForce;
 
         [Header("Max Velocity")]
         [SerializeField] private float _flightMaxVelocity;
+        [SerializeField] private float _flightMaxYVelocity;
+
         [SerializeField] private float _maxVelocityLerpTime;
 
-        [Header("Control Settings")]
-        [SerializeField] private float _holdGestureActivationTime;
+        private Vector3 _currentVerticalForce = Vector3.zero;
 
-        private LongPressGestureRecognizer _longPressGesture;
+        private IFlightInput _flightInput;
 
         /******* Monobehavior Methods *******/
 
@@ -28,67 +29,49 @@ namespace JFrisoGames.PuffMan
         public override void Init(Ball ball)
         {
             base.Init(ball);
-            _longPressGesture = new LongPressGestureRecognizer();
-            _longPressGesture.MinimumDurationSeconds = _holdGestureActivationTime;
-            _longPressGesture.StateUpdated += HandleHold;
-            FingersScript.Instance.AddGesture(_longPressGesture);
+
+            _flightInput = GetComponent<IFlightInput>();
+            _flightInput.InitFlightInput();
+            _flightInput.onFlightStartInput += StartFlight;
+            _flightInput.onFlightEndInput += EndFlight;
         }
 
         public override void ExecuteFixedUpdate()
         {
             base.ExecuteFixedUpdate();
 
-            // End flight if collided with floor
-            if (ballInfo.isInFlight && ballInfo.isCollidingWithFloor)
-                EndFlight();
-
             // Apply flight force if in flight
             if (ballInfo.isInFlight)
-                rigidBody.AddForce(_flightForwardForce, ForceMode.Force);
-        }
-
-        private void HandleHold(GestureRecognizer gesture)
-        {
-            switch (gesture.State)
             {
-                case GestureRecognizerState.Began:
-                {
-                    if (!ballInfo.isCollidingWithFloor)
-                        StartFlight();
-                    break;
-                }
-                case GestureRecognizerState.Executing:
-                {
-                    if (!ballInfo.isInFlight)
-                        return;
-
-                    float horizontalMoveAmount = gesture.DeltaX * _flightHoldSpeed;
-                    rigidBody.AddForce(new Vector3(horizontalMoveAmount, 0, 0), ForceMode.Force);
-                    break;
-                }
-                case GestureRecognizerState.Ended:
-                {
-                    EndFlight();
-                    break;
-                }
+                rigidBody.AddForce(_flightConstantForce, ForceMode.Force);
             }
         }
 
         private void StartFlight()
         {
+            if (ballInfo.isInFlight) return;
+
             ballInfo.isInFlight = true;
 
             _ball.maxVelocityController.KillMaxVelocityLerp();
             _ball.maxVelocityController.SetMaxVelocity(_flightMaxVelocity);
+            _ball.maxVelocityController.SetMaxYVelocity(_flightMaxYVelocity);
+
+            rigidBody.velocity = new Vector3(rigidBody.velocity.x, rigidBody.velocity.y / 4, rigidBody.velocity.z);
+            rigidBody.AddForce(_flightActivationImpulseForce, ForceMode.Impulse);
             
             _ball.visualController.ballVisualState = BallVisualState.Flying;
         }
 
         private void EndFlight()
         {
+            if (!ballInfo.isInFlight) return;
+
             ballInfo.isInFlight = false;
 
             _ball.maxVelocityController.SetMaxVelocityLerp(rigidBody.velocity.z, _ball.maxVelocityController.baseMaxVelocity, _maxVelocityLerpTime);
+            _ball.maxVelocityController.SetMaxYVelocity(Mathf.Infinity);
+
 
             _ball.visualController.ballVisualState = BallVisualState.Regular;
         }

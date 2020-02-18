@@ -18,17 +18,14 @@ namespace JFrisoGames.PuffMan
         [Header("Jump Movement")]
         [SerializeField] private Vector3 _jumpForce;
 
-
-        [Header("Control Settings")]
-        [SerializeField] private float _maxTapDistance = 0.3f;
-
         private Tween _jumpTween;
 
         private float _currentCompressionAmount = 0f;
 
         private Vector3 _currentCompressedScale { get { return Vector3.Lerp(_startScale, _fullyCompressedScale, _currentCompressionAmount); } }
 
-        private TapGestureRecognizer _tapGesture;
+        private IJumpInput _jumpInput;
+
 
         /******* Monobehavior Methods *******/
 
@@ -40,10 +37,9 @@ namespace JFrisoGames.PuffMan
 
             _startScale = _ball.visualController.transform.localScale;
 
-            _tapGesture = new TapGestureRecognizer();
-            _tapGesture.ThresholdUnits = _maxTapDistance;
-            _tapGesture.StateUpdated += HandleTap;
-            FingersScript.Instance.AddGesture(_tapGesture);
+            _jumpInput = GetComponent<IJumpInput>();
+            _jumpInput.InitJumpInput();
+            _jumpInput.onJumpInput += HandleJumpInput;
         }
 
         public override void ExecuteFixedUpdate()
@@ -53,18 +49,17 @@ namespace JFrisoGames.PuffMan
             _ball.visualController.transform.localScale = _currentCompressedScale;
         }
 
-        private void HandleTap(GestureRecognizer gesture)
+        private void HandleJumpInput(float jumpAmount)
         {
-            if (gesture.State == GestureRecognizerState.Ended && ballInfo.isCollidingWithFloor)
-            {
-                if (_jumpTween != null && _jumpTween.IsActive())
-                    _jumpTween.Kill();
+            if (!_ball.ballInfo.isCollidingWithFloor) return;
 
-                _jumpTween = DOTween.To(() => _currentCompressionAmount, (value) => _currentCompressionAmount = value, 1f, _compressionTime).From(true);
+            if (_jumpTween != null && _jumpTween.IsActive())
+                _jumpTween.Kill();
 
-                rigidBody.velocity = new Vector3(rigidBody.velocity.x, 0, rigidBody.velocity.z); // Reset the y velocity
-                rigidBody.AddForce(_jumpForce, ForceMode.Impulse);
-            }
+            _jumpTween = DOTween.To(() => _currentCompressionAmount, (value) => _currentCompressionAmount = value, 1f, _compressionTime).From(true);
+
+            rigidBody.velocity = new Vector3(rigidBody.velocity.x, 0, rigidBody.velocity.z); // Reset the y velocity
+            rigidBody.AddForce(_jumpForce * jumpAmount, ForceMode.Impulse);
         }
     }
 }

@@ -52,6 +52,8 @@ namespace JFrisoGames.PuffMan
         }
         private float _sqrMaxVelocity { get { return _maxVelocity * _maxVelocity; } }
 
+        private float _maxYVelocity = Mathf.Infinity;
+
         private SwipeGestureRecognizer _swipeGesture;
 
         /******* Methods *******/
@@ -63,20 +65,18 @@ namespace JFrisoGames.PuffMan
             maxVelocityBoosts = new List<MaxVelocityBoost>();
         }
 
-        public override void ExecuteFixedUpdate()
+        public void Update()
         {
-            base.ExecuteFixedUpdate();
-
             // Apply the max velocity
             Vector3 currentXZVelocity = new Vector3(rigidBody.velocity.x, 0, rigidBody.velocity.z);
-            if (currentXZVelocity.sqrMagnitude > _sqrMaxVelocity)
-            {
-                rigidBody.velocity = new Vector3(
-                    currentXZVelocity.normalized.x * _maxVelocity,
-                    rigidBody.velocity.y,
-                    currentXZVelocity.normalized.z * _maxVelocity
-                );
-            }
+
+            bool applyMaxXZVelocity = currentXZVelocity.sqrMagnitude > _sqrMaxVelocity;
+            bool applyMaxYVelocity = rigidBody.velocity.y > _maxYVelocity;
+            float xVelocity = applyMaxXZVelocity ? currentXZVelocity.normalized.x * _maxVelocity : rigidBody.velocity.x;
+            float zVelocity = applyMaxXZVelocity ? currentXZVelocity.normalized.z * _maxVelocity : rigidBody.velocity.z;
+            float yVelocity = applyMaxYVelocity ? _maxYVelocity : rigidBody.velocity.y;
+
+            rigidBody.velocity = new Vector3(xVelocity, yVelocity, zVelocity);
 
             // Update the boost times
             for (int i = 0; i < maxVelocityBoosts.Count; i++)
@@ -91,7 +91,8 @@ namespace JFrisoGames.PuffMan
         }
 
         public void SetMaxVelocity(float mVToSet) { _currentMaxVelocity = mVToSet; }
-        
+        public void SetMaxYVelocity(float mVToSet) { _maxYVelocity = mVToSet; }
+
         public void SetMaxVelocityLerp(float mVToSetNow, float targetMV, float lerpTime)
         {
             _currentMaxVelocity = mVToSetNow;

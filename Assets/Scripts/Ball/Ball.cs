@@ -9,7 +9,7 @@ namespace JFrisoGames.PuffMan
     {
         /******* Variables & Properties*******/
 
-        public RollController rollController { get; private set; }
+        public MovementController movementController { get; private set; }
         public FlightController flightController { get; private set; }
         public JumpController jumpController { get; private set; }
         public MaxVelocityController maxVelocityController { get; private set; }
@@ -38,7 +38,7 @@ namespace JFrisoGames.PuffMan
         {
             rigidBody = GetComponent<Rigidbody>();
 
-            rollController = GetComponent<RollController>();
+            movementController = GetComponent<MovementController>();
             flightController = GetComponent<FlightController>();
             jumpController = GetComponent<JumpController>();
             maxVelocityController = GetComponent<MaxVelocityController>();
@@ -48,7 +48,7 @@ namespace JFrisoGames.PuffMan
 
             // NOTE : This order matters as it changes the execution order of the FixedUpdateExecute calls
             _ballControllers = new List<AbstractBallController>() {
-                rollController,
+                movementController,
                 flightController,
                 jumpController,
                 maxVelocityController,
