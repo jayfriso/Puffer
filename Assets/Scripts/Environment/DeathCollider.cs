@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace JFrisoGames.PuffMan
 {
-    public class DeathCollider : MonoBehaviour
+    public class DeathCollider : AbstractEnvironmentCollider
     {
         /******* Variables & Properties*******/
 
@@ -24,8 +24,12 @@ namespace JFrisoGames.PuffMan
 
         private void HandleCollision(Collider other)
         {
-            if (other.CompareTag(PuffConstants.TAG_BALL))
-                PuffSingletonManager.gameManager.SetBallToCheckPoint();
+            CheckAndSetBall(other);
+        }
+
+        protected override void HandleFixedUpdate(Ball ball)
+        {
+            PuffSingletonManager.gameManager.SetBallToCheckPoint();
         }
     }
 }

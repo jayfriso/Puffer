@@ -13,40 +13,29 @@ namespace JFrisoGames.PuffMan
     public class BallVisualController : AbstractBallController
     {
         /******* Variables & Properties*******/
-        [SerializeField] private ParticleSystem _particleSystem;
-        [SerializeField] private Material _ballExpandedMaterial;
-        [SerializeField] private Material _ballCompressedMaterial;
-        [SerializeField] private int _materialToSet;
 
-        private MeshRenderer _meshRenderer;
+        [SerializeField] private GameObject _glider;
+
+        private Animator _animator;
 
         private BallVisualState _ballVisualState;
-
-        private Material[] _ballMaterials;
         public BallVisualState ballVisualState 
         { 
             get { return _ballVisualState; }
             set
             {
                 _ballVisualState = value;
-                var emissionModule = _particleSystem.emission;
-                switch (value)
-                {
-                    case BallVisualState.Regular:
-                        _ballMaterials[2] = _ballExpandedMaterial;
-                        emissionModule.enabled = false;
-                        break;
-                    case BallVisualState.Flying:
-                        _ballMaterials[2] = _ballCompressedMaterial;
-                        _meshRenderer.materials[_materialToSet] = _ballCompressedMaterial;
-                        emissionModule.enabled = true;
-                        break;
-                }
-                _meshRenderer.materials = _ballMaterials;
+                _glider.SetActive(value == BallVisualState.Flying);
             }
         }
 
         /******* Monobehavior Methods *******/
+
+        // TODO : Fix to use the fixed update method of base class
+        public void FixedUpdate()
+        {
+            _animator.SetFloat("xVelocity", rigidBody.velocity.x);
+        }
 
         /******* Methods *******/
 
@@ -54,8 +43,8 @@ namespace JFrisoGames.PuffMan
         {
             base.Init(ball);
 
-            _meshRenderer = GetComponent<MeshRenderer>();
-            _ballMaterials = _meshRenderer.materials;
+            _animator = GetComponent<Animator>();
+
             ballVisualState = BallVisualState.Regular;
         }
     }

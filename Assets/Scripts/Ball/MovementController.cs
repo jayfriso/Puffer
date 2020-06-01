@@ -9,7 +9,11 @@ namespace JFrisoGames.PuffMan
         /******* Variables & Properties*******/
         [Header("Movement Variables")]
         [SerializeField] private Vector3 _movementSpeed;
-        [SerializeField] private Vector3 _constantForwardForce; 
+
+        [Header("Forward Movement")]
+        [SerializeField] private Vector3 _groundedForwardForce;
+        [SerializeField] private Vector3 _inAirForwardForce;
+        [SerializeField] private Vector3 _flightForwardForce;
 
         private IMovementInput _movementInput;
 
@@ -29,7 +33,17 @@ namespace JFrisoGames.PuffMan
         public override void ExecuteFixedUpdate()
         {
             base.ExecuteFixedUpdate();
-            rigidBody.AddForce(_constantForwardForce, ForceMode.Force);
+
+            Vector3 forwardForce;
+            if (ballInfo.isInFlight)
+                forwardForce = _flightForwardForce;
+            else if (!ballInfo.isCollidingWithFloor)
+                forwardForce = _inAirForwardForce;
+            else
+                forwardForce = _groundedForwardForce;
+
+
+            rigidBody.AddForce(forwardForce, ForceMode.Force);
         }
 
         private void HandleMovementInput(float movementDelta)

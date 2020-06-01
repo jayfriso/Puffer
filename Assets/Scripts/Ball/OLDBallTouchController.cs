@@ -295,7 +295,7 @@ namespace JFrisoGames.PuffMan
             for (int i = 0; i < collisionInfo.contacts.Length; i++)
             {
                 ContactPoint contact = collisionInfo.contacts[i];
-                if (contact.otherCollider.CompareTag(PuffConstants.TAG_FLOOR))
+                if (contact.otherCollider.CompareTag(PuffConstants.DEPRICATED_TAG_FLOOR))
                 {
                     _currentFloorTime += Time.deltaTime;
                     

@@ -1,16 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace JFrisoGames.PuffMan
 {
     public class BallInfo : AbstractBallController
     {
         /******* Events *******/
-        public delegate void OnBallVelocityChange(int newBallSpeed);
+        public delegate void OnBallVelocityChange(Vector3 newBallVelocity);
         public event OnBallVelocityChange onBallVelocityChange;
+
         public delegate void OnBallPositionChange(Vector3 newPosition);
         public event OnBallPositionChange onBallPositionChange;
+
+        public delegate void OnBallStaminaChange(float newStaminaValue);
+        public event OnBallStaminaChange onBallStaminaChanged;
 
         /******* Variables & Properties*******/
         [Header("Info Variables")]
@@ -20,36 +22,58 @@ namespace JFrisoGames.PuffMan
 
         public bool isCollidingWithFloor
         {
-            get
+            get => _ball.ballCollider.isCollidingWithFloor;
+        }
+
+        // Stamina settings
+        private float _stamina = 1f;
+        public float stamina 
+        {
+            get => _stamina;
+            set
             {
-                RaycastHit hit;
-                Debug.DrawRay(transform.position, Vector3.down * _floorDetectionRayDistance, Color.yellow);
-                // Does the ray intersect any objects excluding the player layer
-                return Physics.Raycast(transform.position, Vector3.down, out hit, _floorDetectionRayDistance);
+                _stamina = Mathf.Clamp(value, 0f, 1f);
+                if (Mathf.Abs(_stamina - _lastStaminaValueSinceEventTrigger) > _minBallStaminaChangeValueForEventTrigger)
+                {
+                    _lastStaminaValueSinceEventTrigger = _stamina;
+                    onBallStaminaChanged?.Invoke(_stamina);
+                }
             }
         }
+        public bool isOutOfStamina => stamina <= 0f;
+
+        public Vector3 velocity => rigidBody.velocity;
 
         [Header("EventSettings")]
         [SerializeField] private Vector3 _ballPositionChangeMinDelta;
-        private int _lastVelocityAsInt = 0;
+        [SerializeField] private float _ballVelocityChangeMinDelta;
+        [SerializeField] private float _minBallStaminaChangeValueForEventTrigger;
+
+        private float _lastVelocityMagnitude = 0;
         private Vector3 _lastPosition;
+        private float _lastStaminaValueSinceEventTrigger = 0f;
+        private int _floorLayerMask;
 
         /******* Monobehavior Methods *******/
 
-        /******* Methods *******/
+        private void Awake()
+        {
+            _floorLayerMask = LayerMask.GetMask();
+        }
 
+        /******* Methods *******/
 
         public override void ExecuteFixedUpdate()
         {
             base.ExecuteFixedUpdate();
 
             // Handle Velocity Changes
-            int currentVelocity = Mathf.FloorToInt(rigidBody.velocity.z);
-            if (_lastVelocityAsInt != currentVelocity)
+            float currentVelocityMagnitude = rigidBody.velocity.magnitude;
+            if (Mathf.Abs(currentVelocityMagnitude - _lastVelocityMagnitude) > _ballVelocityChangeMinDelta)
             {
-                _lastVelocityAsInt = currentVelocity;
+                _lastVelocityMagnitude = currentVelocityMagnitude;
                 if (onBallVelocityChange != null)
-                    onBallVelocityChange.Invoke(currentVelocity);
+                    onBallVelocityChange.Invoke(rigidBody.velocity);
             }
 
             // Handle Position Changes
@@ -61,6 +85,15 @@ namespace JFrisoGames.PuffMan
                 if (onBallPositionChange != null)
                     onBallPositionChange.Invoke(transform.position);
             }
+        }
+
+        public bool CheckCollisionWithFloorWithDistance(float rayDistance)
+        {
+            int layerMask = LayerMask.GetMask(PuffConstants.LAYER_FLOOR);
+
+            RaycastHit hit;
+            // Does the ray intersect any objects excluding the player layer
+            return Physics.Raycast(transform.position, Vector3.down, out hit, rayDistance, layerMask);
         }
     }
 }

@@ -35,19 +35,19 @@ namespace JFrisoGames.PuffMan
             _totalLevelDistance = totalLevelDistance;
         }
 
-        public void HandleBallVelocityChange(int newVelocity)
+        public void HandleBallVelocityChange(Vector3 newVelocity)
         {
             VelocityTextMilestone velocityTextMilestone = _velocityTextMilestones[0];
             for (int i = _velocityTextMilestones.Count - 1; i >= 0; i--)
             {
-                if (newVelocity > _velocityTextMilestones[i].minVelocity)
+                if (newVelocity.z > _velocityTextMilestones[i].minVelocity)
                 {
                     velocityTextMilestone = _velocityTextMilestones[i];
                     break;
                 }
             }
             
-            _tmpVelocity.text = newVelocity.ToString();
+            _tmpVelocity.text = Mathf.FloorToInt(newVelocity.z).ToString();
             _tmpVelocity.fontSize = velocityTextMilestone.textSize;
             _tmpVelocity.color = velocityTextMilestone.textColor;
         }

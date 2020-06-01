@@ -34,6 +34,8 @@ namespace JFrisoGames.PuffMan
         private bool _isFlightEnabled;
         private float _currentAirTime;
 
+        private SwipeGestureRecognizer _flightActivationSwipeGesture;
+
         /******* Monobehavior Methods *******/
 
         public void Update()
@@ -62,15 +64,17 @@ namespace JFrisoGames.PuffMan
 
             if (_isFlightEnabled)
             {
+                #region DEPRECTED - Old control scheme to start flying simply by touching
                 // If in air, there is a touch, and not flying yet uptick the timeInAir until we start flight
-                if (!_ballInfo.isCollidingWithFloor && !_ballInfo.isInFlight && isThereATouch)
-                {
-                    _currentAirTime += Time.deltaTime;
-                    if (_currentAirTime > _holdTimeForGlideActivation)
-                    {
-                        onFlightStartInput?.Invoke();
-                    }
-                }
+                // TODO Testing with different controls
+                //if (!_ballInfo.isCollidingWithFloor && !_ballInfo.isInFlight && isThereATouch)
+                //{
+                //    _currentAirTime += Time.deltaTime;
+                //    if (_currentAirTime > _holdTimeForGlideActivation)
+                //    {
+                //        onFlightStartInput?.Invoke();
+                //    }
+                //}
 
                 // If the ball has just collided or the touch was released reset the timeInAir and end flight if in flight currently
                 if ((_ballInfo.isCollidingWithFloor || !isThereATouch) && _currentAirTime > 0f)
@@ -79,6 +83,12 @@ namespace JFrisoGames.PuffMan
 
                     if (_ballInfo.isInFlight)
                         onFlightEndInput?.Invoke();
+                }
+                #endregion
+
+                if (_ballInfo.isInFlight && (!isThereATouch || _ballInfo.isCollidingWithFloor || _ballInfo.isOutOfStamina))
+                {
+                    onFlightEndInput?.Invoke();
                 }
             }
         }
@@ -94,6 +104,7 @@ namespace JFrisoGames.PuffMan
         {
             _jumpSwipeGesture = new SwipeGestureRecognizer();
             _jumpSwipeGesture.Direction = SwipeGestureRecognizerDirection.Up;
+            _jumpSwipeGesture.AllowSimultaneousExecution(_flightActivationSwipeGesture);
             _jumpSwipeGesture.MinimumDistanceUnits = 0.75f;
             _jumpSwipeGesture.MinimumSpeedUnits = 2f;
             _jumpSwipeGesture.FailOnDirectionChange = false;
@@ -104,7 +115,7 @@ namespace JFrisoGames.PuffMan
 
         private void HandleJumpSwipe(GestureRecognizer gesture)
         {
-            if (gesture.State == GestureRecognizerState.Ended)
+            if (gesture.State == GestureRecognizerState.Ended && !_ballInfo.isOutOfStamina)
             {
                 onJumpInput?.Invoke(1f);
             }
@@ -115,6 +126,23 @@ namespace JFrisoGames.PuffMan
             _isFlightEnabled = true;
 
             _ballInfo = GetComponent<Ball>().ballInfo;
+
+            _flightActivationSwipeGesture = new SwipeGestureRecognizer();
+            _flightActivationSwipeGesture.AllowSimultaneousExecution(_jumpSwipeGesture);
+            _flightActivationSwipeGesture.Direction = SwipeGestureRecognizerDirection.Down;
+            _flightActivationSwipeGesture.MinimumSpeedUnits = 1f;
+            _flightActivationSwipeGesture.MinimumDistanceUnits = 0.75f;
+            _flightActivationSwipeGesture.StateUpdated += HandleFlightActivationSwipe;
+
+            FingersScript.Instance.AddGesture(_flightActivationSwipeGesture);
+        }
+
+        private void HandleFlightActivationSwipe(GestureRecognizer gesture)
+        {
+            if (gesture.State == GestureRecognizerState.Ended)
+            {
+                onFlightStartInput?.Invoke();
+            }
         }
     }
 }

@@ -12,9 +12,13 @@ namespace JFrisoGames.PuffMan
         public MovementController movementController { get; private set; }
         public FlightController flightController { get; private set; }
         public JumpController jumpController { get; private set; }
-        public MaxVelocityController maxVelocityController { get; private set; }
+        public VelocityController maxVelocityController { get; private set; }
 
         public BallVisualController visualController { get; private set; }
+        public BallCanvasController ballCanvasController { get; private set; }
+
+        public StaminaController staminaController { get; private set; }
+
 
         public BallInfo ballInfo { get; private set; }
         
@@ -41,10 +45,13 @@ namespace JFrisoGames.PuffMan
             movementController = GetComponent<MovementController>();
             flightController = GetComponent<FlightController>();
             jumpController = GetComponent<JumpController>();
-            maxVelocityController = GetComponent<MaxVelocityController>();
-            visualController = GetComponentInChildren<BallVisualController>();
+            maxVelocityController = GetComponent<VelocityController>();
             ballInfo = GetComponent<BallInfo>();
-            ballCollider = GetComponentInChildren<BallCollider>();
+            ballCollider = GetComponent<BallCollider>();
+            staminaController = GetComponent<StaminaController>();
+
+            visualController = GetComponentInChildren<BallVisualController>();
+            ballCanvasController = GetComponentInChildren<BallCanvasController>();
 
             // NOTE : This order matters as it changes the execution order of the FixedUpdateExecute calls
             _ballControllers = new List<AbstractBallController>() {
@@ -54,10 +61,14 @@ namespace JFrisoGames.PuffMan
                 maxVelocityController,
                 visualController,
                 ballInfo,
-                ballCollider
+                ballCollider,
+                staminaController,
+                ballCanvasController
             };
 
             _ballControllers.ForEach(ballController => ballController.Init(this));
+
+            ballInfo.onBallStaminaChanged += ballCanvasController.staminaCircleElement.HandleStaminaValueChanged;
         }
 
         public void Reset(Vector3 startPosition)

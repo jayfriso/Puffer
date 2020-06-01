@@ -8,7 +8,9 @@ namespace JFrisoGames.PuffMan
     {
         /******* Tags *******/
         public const string TAG_BALL = "Ball";
-        public const string TAG_FLOOR = "Floor";
+        public const string DEPRICATED_TAG_FLOOR = "Floor";
+
+        public const string LAYER_FLOOR = "Floor";
 
         /******* Input *******/
     }

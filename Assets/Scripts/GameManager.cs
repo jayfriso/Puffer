@@ -9,13 +9,29 @@ namespace JFrisoGames.PuffMan
         /******* Variables & Properties*******/
 
         [Header("Game Components")]
-        [SerializeField] private LevelSpawnSystem _levelSpawnSystem;
         [SerializeField] private Ball _ballController;
         public Ball ballController { get { return _ballController; } }
+
+        [SerializeField] private CameraBehavior _cameraController;
 
         [Header("Start Level Properties")]
         [SerializeField] private Vector3 _levelStartPosition;
         [SerializeField] private Vector3 _ballSpawnDiffFromGround;
+
+
+        [Header("Level Testing")]
+        [SerializeField] private bool _usePartLevel = false;
+
+        [Header("Part Levels")]
+        [SerializeField] private PartLevelFactory _partLevelFactory;
+        [SerializeField] private PartLevelData _partLevelData;
+
+        [Header("Island Levels")]
+        [SerializeField] private IslandLevelFactory _islandLevelFactory;
+        [SerializeField] private IslandLevelData _islandLevelData;
+
+        private ILevelFactory _levelFactory;
+        private ILevel _currentLevel;
 
         /******* Monobehavior Methods *******/
 
@@ -24,23 +40,30 @@ namespace JFrisoGames.PuffMan
         public void Init()
         {
             _ballController.Init();
-
+            _levelFactory = _usePartLevel ? (ILevelFactory)_partLevelFactory: (ILevelFactory)_islandLevelFactory;
+            _cameraController.Init(_ballController.ballInfo);
+           
             ClearGame();
             StartGame();
-            
+
             GameOverlay gameOverlay = PuffSingletonManager.uiManager.CreateScreen<GameOverlay>(PuffScreenID.GameOverlay, Engine.ScreenCreateBehavior.ShowOnCreate);
-            gameOverlay.Init(_levelSpawnSystem.currentLevelPart.startPosition, _levelSpawnSystem.totalLevelDistance);
+            gameOverlay.Init(_currentLevel.startPosition, _currentLevel.totalLevelDistance);
             _ballController.ballInfo.onBallVelocityChange += gameOverlay.HandleBallVelocityChange;
-            _ballController.ballInfo.onBallPositionChange += gameOverlay.HandleBallPositionChange;
+
+            //_ballController.ballInfo.onBallPositionChange += gameOverlay.HandleBallPositionChange; // disabling the ball position hud element for now
+
+            _ballController.ballInfo.onBallVelocityChange += _cameraController.HandleBallVelocityChanged;
         }
         
         private void ClearGame()
         {
-            _levelSpawnSystem.ClearLevel();
+            if (_currentLevel != null)
+                _currentLevel.Clear();
         }
         private void StartGame()
         {
-            _levelSpawnSystem.CreateLevel(_levelStartPosition);
+            ILevelData levelData = _usePartLevel ? (ILevelData)_partLevelData : (ILevelData)_islandLevelData;
+            _currentLevel = _levelFactory.CreateLevel(levelData, _levelStartPosition);
             SetBallToCheckPoint();
         }
 
@@ -52,7 +75,7 @@ namespace JFrisoGames.PuffMan
 
         public void SetBallToCheckPoint()
         {
-            _ballController.Reset(_levelSpawnSystem.currentLevelPart.startPosition + _ballSpawnDiffFromGround);
+            _ballController.Reset(_currentLevel.startPosition + _ballSpawnDiffFromGround);
 
         }
     }
